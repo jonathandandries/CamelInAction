@@ -22,17 +22,35 @@ public class SampleCamelRouter extends RouteBuilder {
     public void configure() throws Exception {
         // If you do restConfiguration here, it will override the one in camel-context.xml.
         // We should create do this in an @Configuration class so that it is only done once.
-        RestConfigurationDefinition contextPath = restConfiguration()
-                .component("servlet")
-                .bindingMode(RestBindingMode.json)
-                .contextPath("/RiderAuto/api/v1")
-                .apiContextPath("/api-doc");
-
-        rest().get("/hello")
-                .to("direct:hello");
-
-        from("direct:hello")
-                .log(LoggingLevel.INFO, "Hello World")
-                .transform().simple("Hello World");
+//        RestConfigurationDefinition contextPath = restConfiguration()
+//                .component("servlet")
+//                .bindingMode(RestBindingMode.json)
+//                .contextPath("/RiderAuto/api/v1")
+//                .apiContextPath("/api-doc");
+//
+//        rest().get("/hello")
+//                .to("direct:hello");
+//
+//        from("direct:hello")
+//                .log(LoggingLevel.INFO, "Hello World")
+//                .transform().simple("Hello World");
+        from("file:target/placeorder")
+                .to("jms:incomingOrders");
+        
+        from("jetty://http://0.0.0.0:8888/placeorder")
+                .inOnly("jms:incomingOrders")
+                .transform().constant("OK");
+        
+        from("jms:incomingOrders")
+                .convertBodyTo(String.class)
+                .choice()
+                .when().simple("${body} contains '?xml'")
+                .log("XML")
+                .log("${body}")
+                .to("jms:orders")
+                .otherwise()
+                .log("CSV?")
+                .log("${body}")
+                .to("jms:orders");
     }
 }
