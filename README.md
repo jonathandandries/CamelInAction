@@ -1,9 +1,4 @@
-# leavetracking-api-rest-service
-
-Working endpoints:
-
-curl http://localhost:9090/LeaveTracking/api/v1/api-doc/swagger.yaml
-curl http://localhost:9090/LeaveTracking/api/v1/schedule
+# Examples from Camel in Action
 
 References:
 
