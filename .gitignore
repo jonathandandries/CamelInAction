@@ -1,0 +1,12 @@
+target/
+*.settings
+*.externalToolBuilders
+*.class
+*.classpath
+*.prefs
+*.project
+*.launch
+*.factorypath
+*nb-configuration.xml
+*nbactions.xml
+application-default.properties
