@@ -1,69 +1,70 @@
-# Spring-Boot Camel XML QuickStart
+# Rider Order Frontend
 
-This example demonstrates how to configure Camel routes in Spring Boot via
-a Spring XML configuration file.
+Spring Boot + Fuse/Camel implementation of the "Rider Order Frontend" described
+in the article here:
 
-The application utilizes the Spring [`@ImportResource`](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/annotation/ImportResource.html) annotation to load a Camel Context definition via a [camel-context.xml](src/main/resources/spring/camel-context.xml) file on the classpath.
+[Open Source Integration With Apache Camel and How Fuse IDE Can Help](https://dzone.com/articles/open-source-integration-apache) by Jonathan Anstey, August 14, 2019.
 
-**IMPORTANT**: This quickstart can run in 2 modes: standalone on your machine and on an OpenShift Cluster 
+Note that my implementation is different than the base article in two important ways:
+ 1. I'm using the [Red Hat Fuse v7.1](https://access.redhat.com/documentation/en-us/red_hat_fuse/7.1/html/) packaging of [Apache Camel](https://camel.apache.org/) for Spring Boot, and
+ 2. I'm using Java DSL instead of XML to specify my routes.
 
-## Building
+Quoting the description of the problem:
 
-The example can be built with
+    The example in this article is based on a fictional motorcycle parts business used throughout the Camel in Action book. The company, named Rider Auto Parts, supplies parts to motorcycle manufacturers. Over the years, they’ve changed the way they receive orders several times. Initially, orders were placed by uploading comma-separated value (CSV) files to an FTP server. The message format was later changed to XML. Currently, they provide a website through which orders are submitted as XML messages over HTTP.
+    
+    Rider Auto Parts asks new customers to use the web interface to place orders, but because of service level agreements (SLAs) with existing customers, they must keep all the old message formats and interfaces up and running. All of these messages are converted to an internal Plain Old Java Object (POJO) format before processing.
+    
+        1. There are two Message Endpoints; one for FTP connectivity and another for HTTP.
+        2. Messages from these endpoints are fed into the incomingOrders Message Channel
+        3. The messages are consumed from the incomingOrders Message Channel and routed by a Content-Based Router to one of two Message Translators. As the EIP name implies, the routing destination depends on the content of the message. In this case, we need to route based on whether the content is a CSV or XML file.
+        4. Both Message Translators convert the message content into a POJO, which is fed into the orders Message Channel.
 
-    mvn clean install
+## Running on your machine
 
-### Running the Quickstart standalone on your machine
+First, obtain the project (git clone or download) and enter the project's directory.
 
-You can also run this quickstart as a standalone project directly:
+Because this is Spring Boot, you don't need to install any server software. All you need is [Java version 8](https://openjdk.java.net/install/) and [Apache Maven](https://maven.apache.org/). You can run this project from the command line:
 
-Obtain the project and enter the project's directory
-Build the project:
+```bash
+# Build the project
+mvn clean package
 
-```
-$ mvn clean package
-$ mvn spring-boot:run 
-```
-
-### Running the Quickstart on OpenShift Cluster
-
-The following steps assume you already have a Kubernetes / Openshift environment installed and relative tools like `oc`.
-If you have a single-node OpenShift cluster, such as `Minishift`, you can also deploy your quickstart there. 
-A single-node OpenShift cluster provides you with access to a cloud environment that is similar to a production environment.
-
-**IMPORTANT**: You need to run this example on Container Development Kit 3.3 or OpenShift 3.7.
-Both of these products have suitable Fuse images pre-installed. 
-If you run it in an environment where those images are not preinstalled follow the steps described below.
-
-+ Log in and create your project / namespace:
-```
-$ oc login -u developer -p developer
-$ oc new-project MY_PROJECT_NAME
+# Run the project
+mvn spring-boot:run 
 ```
 
-+ Build and deploy the project to the Kubernetes / OpenShift cluster:
-```
-$ mvn clean -DskipTests fabric8:deploy -Popenshift
+Creating orders to be processed:
+
+```bash
+# Send an XML order via the REST endpoint:
+curl -d '<?xml version="1.0" encoding="UTF-8"?>
+<order name="windshield wiper" amount="2"/>' http://localhost:8888/placeorder
+
+# Move pre-created messages to the /data/placeorder folder
+mv data/message* data/placeorder
 ```
 
-### Running the Quickstart on OpenShift Cluster without preinstalled images
+## Technology Stack References:
 
-Following steps assume you already have a Kubernates / Openshift environment installed and relative tools like `oc`.
-If you have a single-node OpenShift cluster, such as `Minishift`, you can also deploy your quickstart there. 
-A single-node OpenShift cluster provides you with access to a cloud environment that is similar to a production environment.
+1. [Red Hat Fuse v7.1](https://access.redhat.com/documentation/en-us/red_hat_fuse/7.1/html/)
+2. [Apache Camel v2.21.0](https://camel.apache.org/)
+3. [Spring Boot v1.5.13](https://spring.io/projects/spring-boot)
+3. [Apache Maven](https://maven.apache.org/)
+4. [Java version 8](https://openjdk.java.net/install/)
 
-+ Log in and create your project / namespace:
-```
-$ oc login -u developer -p developer
-$ oc new-project MY_PROJECT_NAME
-```
+## Contributing
 
-+ Import base images in your newly created project (MY_PROJECT_NAME):
-```
-$ oc import-image fis-java-openshift:2.0 --from=registry.access.redhat.com/jboss-fuse-6/fis-java-openshift:2.0 --confirm
-```
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request.
 
-+ Build and deploy the project to the OpenShift cluster:
-```
-$ mvn clean -DskipTests fabric8:deploy -Popenshift -Dfabric8.generator.fromMode=istag -Dfabric8.generator.from=MY_PROJECT_NAME/fis-java-openshift:2.0
-```
+## History
+
+1. March 7, 2020 -- initial version.
+
+## License
+
+Gratis and libre.
