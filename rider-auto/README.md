@@ -11,14 +11,31 @@ Note that my implementation is different than the base article in two important 
 
 Quoting the description of the problem:
 
-    The example in this article is based on a fictional motorcycle parts business used throughout the Camel in Action book. The company, named Rider Auto Parts, supplies parts to motorcycle manufacturers. Over the years, they’ve changed the way they receive orders several times. Initially, orders were placed by uploading comma-separated value (CSV) files to an FTP server. The message format was later changed to XML. Currently, they provide a website through which orders are submitted as XML messages over HTTP.
+    The example in this article is based on a fictional motorcycle parts business 
+    used throughout the Camel in Action book. The company, named Rider Auto Parts, 
+    supplies parts to motorcycle manufacturers. Over the years, they’ve changed the 
+    way they receive orders several times. Initially, orders were placed by 
+    uploading comma-separated value (CSV) files to an FTP server. The message format
+    was later changed to XML. Currently, they provide a website through which orders
+    are submitted as XML messages over HTTP.
     
-    Rider Auto Parts asks new customers to use the web interface to place orders, but because of service level agreements (SLAs) with existing customers, they must keep all the old message formats and interfaces up and running. All of these messages are converted to an internal Plain Old Java Object (POJO) format before processing.
+    Rider Auto Parts asks new customers to use the web interface to place orders, 
+    but because of service level agreements (SLAs) with existing customers, they 
+    must keep all the old message formats and interfaces up and running. All of 
+    these messages are converted to an internal Plain Old Java Object (POJO) format 
+    before processing.
     
-        1. There are two Message Endpoints; one for FTP connectivity and another for HTTP.
-        2. Messages from these endpoints are fed into the incomingOrders Message Channel
-        3. The messages are consumed from the incomingOrders Message Channel and routed by a Content-Based Router to one of two Message Translators. As the EIP name implies, the routing destination depends on the content of the message. In this case, we need to route based on whether the content is a CSV or XML file.
-        4. Both Message Translators convert the message content into a POJO, which is fed into the orders Message Channel.
+        1. There are two Message Endpoints; one for FTP connectivity and another 
+           for HTTP.
+        2. Messages from these endpoints are fed into the incomingOrders Message 
+           Channel
+        3. The messages are consumed from the incomingOrders Message Channel and 
+           routed by a Content-Based Router to one of two Message Translators. As 
+           the EIP name implies, the routing destination depends on the content of 
+           the message. In this case, we need to route based on whether the 
+           content is a CSV or XML file.
+        4. Both Message Translators convert the message content into a POJO, which 
+           is fed into the orders Message Channel.
 
 ## Running on your machine
 
