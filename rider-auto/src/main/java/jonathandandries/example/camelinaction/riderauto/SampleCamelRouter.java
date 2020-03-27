@@ -9,6 +9,7 @@ import java.util.Arrays;
 import javax.xml.bind.JAXBContext;
 import jonathandandries.example.camelinaction.riderauto.model.Order;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
@@ -35,7 +36,7 @@ public class SampleCamelRouter extends RouteBuilder {
     
     @Override
     public void configure() throws Exception {
-        DataFormat jaxbFormat = new JaxbDataFormat(JAXBContext.newInstance(jonathandandries.example.camelinaction.riderauto.model.Order.class));
+        DataFormat jaxbFormat = new JaxbDataFormat(JAXBContext.newInstance(Order.class));
 
         from("file:data/placeorder?delete=true&exclude=.gitkeep")
                 .routeId("FileToJMS")
@@ -47,7 +48,8 @@ public class SampleCamelRouter extends RouteBuilder {
                 .routeId("HTTPtoJMS")
                 .inOnly("jms:incomingOrders")
                 .log("Body: ${body}")
-                .transform().constant("OK");
+                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(201))
+                .setBody(constant("CREATED"));
 
         from("jms:incomingOrders")
                 .routeId("NormalizeMessageData")
